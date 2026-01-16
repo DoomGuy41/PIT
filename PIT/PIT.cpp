@@ -1,10 +1,23 @@
-// PIT.cpp : Defines the entry point for the application.
+﻿// PIT.cpp : Defines the entry point for the application.
 //
 
 #include "framework.h"
 #include "PIT.h"
+#include "HPIA.h"
+#include "PowerShellUtils.h"
+#include "AdminUtils.h"
 
 #define MAX_LOADSTRING 100
+
+#define BTN_HPIA            102
+#define BTN_LANG_FR         103
+#define BTN_GPUPDATE        104
+#define BTN_NUMLOCK         105
+#define BTN_PRINTER        106
+#define BTN_REGEDIT        107
+#define BTN_DEVMGMT        108
+#define BTN_TASKMGR        109
+#define BTN_INTUNE_FIX     110
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -16,6 +29,24 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+
+
+
+int WINAPI wWinMain(
+    HINSTANCE hInstance,
+    HINSTANCE,
+    PWSTR,
+    int nCmdShow)
+{
+    // 🔐 Vérification ADMIN AVANT TOUT
+    if (!IsRunningAsAdmin())
+    {
+        RelaunchElevatedIfNeeded();
+        return 0; // on quitte l'instance non-admin
+    }
+}
+
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -121,40 +152,39 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - post a quit message and return
 //
 //
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
+    case WM_CREATE:
+    {
+        MessageBox(hwnd, L"Welcome", L"PIT (Post-Install Toolbox)", MB_OK);
+
+        CreateWindowW(L"BUTTON", L"HPIA",
+            WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+            20, 20, 200, 40,
+            hwnd, (HMENU)101, nullptr, nullptr);
+    }
+    break;
+
     case WM_COMMAND:
+    {
+        switch (LOWORD(wParam))
         {
-            int wmId = LOWORD(wParam);
-            // Parse the menu selections:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
+        case BTN_HPIA:
+            RunHPIA();
+            break;
         }
-        break;
-    case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Add any drawing code that uses hdc here...
-            EndPaint(hWnd, &ps);
-        }
-        break;
+    }
+    break;
+
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
+
     default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
+        return DefWindowProc(hwnd, message, wParam, lParam);
     }
     return 0;
 }
