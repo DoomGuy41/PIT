@@ -6,6 +6,8 @@
 #include "HPIA.h"
 #include "PowerShellUtils.h"
 #include "AdminUtils.h"
+#include "GetHostname.h"
+#include "UserInfo.h"
 
 #define MAX_LOADSTRING 100
 
@@ -32,22 +34,6 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 
 
-
-int WINAPI wWinMain(
-    HINSTANCE hInstance,
-    HINSTANCE,
-    PWSTR,
-    int nCmdShow)
-{
-    // 🔐 Vérification ADMIN AVANT TOUT
-    if (!IsRunningAsAdmin())
-    {
-        RelaunchElevatedIfNeeded();
-        return 0; // on quitte l'instance non-admin
-    }
-}
-
-
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
@@ -56,7 +42,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Place code here.
+    
+    {
+        //  Vérification ADMIN AVANT TOUT
+        if (!IsRunningAsAdmin())
+        {
+            RelaunchElevatedIfNeeded();
+            return 0;
+        }
+    }
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -142,31 +136,122 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-//
-//  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  PURPOSE: Processes messages for the main window.
-//
-//  WM_COMMAND  - process the application menu
-//  WM_PAINT    - Paint the main window
-//  WM_DESTROY  - post a quit message and return
-//
-//
+
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+
+    static HWND g_hHostnameLabel = nullptr;
+    static HWND g_hUserLabel = nullptr;
+
+
     switch (message)
     {
+
     case WM_CREATE:
     {
-        MessageBox(hwnd, L"Welcome", L"PIT (Post-Install Toolbox)", MB_OK);
 
-        CreateWindowW(L"BUTTON", L"HPIA",
+
+        // Récupération du hostname
+        std::wstring host = GetHostName();
+        std::wstring labelText = L"Nom Machine : " + host;
+
+        
+        g_hHostnameLabel = CreateWindowExW(
+            0, L"STATIC", labelText.c_str(),
+            WS_CHILD | WS_VISIBLE | SS_LEFT,
+            20, 10, 300, 24,  // x, y, w, h
+            hwnd, nullptr, nullptr, nullptr
+        );
+
+
+        // 2) Utilisateur(ligne en - dessous)
+            // Choisis l’une des deux fonctions selon ce que tu veux afficher :
+            std::wstring user = GetCurrentUserName();        // local only
+            //std::wstring user = GetCurrentUserNameSam();        // "Domaine\\Utilisateur"
+
+        std::wstring userText = L"Utilisateur : " + user;
+
+        g_hUserLabel = CreateWindowExW(
+            0, L"STATIC", userText.c_str(),
+            WS_CHILD | WS_VISIBLE | SS_LEFT,
+            20, 10 + 24 + 4, 560, 22,   // y = 10 (hostname) + 24 (hauteur) + 4 (marge)
+            hwnd, nullptr, nullptr, nullptr
+        );
+
+
+        // (Optionnel) mettre en gras
+        LOGFONTW lf{};
+        lf.lfHeight = -18;
+        lf.lfWeight = FW_BOLD;
+        wcscpy_s(lf.lfFaceName, L"Segoe UI");
+        HFONT hFont = CreateFontIndirectW(&lf);
+        SendMessageW(g_hHostnameLabel, WM_SETFONT, (WPARAM)hFont, TRUE);
+
+        int x = 20;
+        int y = 20;
+        int w = 300;
+        int h = 36;
+        int gap = 6;
+
+
+        y += h + gap;
+        CreateWindowW(L"BUTTON", L"HPIA seul",
             WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-            20, 20, 200, 40,
-            hwnd, (HMENU)101, nullptr, nullptr);
+            x, y, w, h,
+            hwnd, (HMENU)BTN_HPIA, nullptr, nullptr);
+
+        y += h + gap;
+        CreateWindowW(L"BUTTON", L"Passer langue en français",
+            WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+            x, y, w, h,
+            hwnd, (HMENU)BTN_LANG_FR, nullptr, nullptr);
+
+        y += h + gap;
+        CreateWindowW(L"BUTTON", L"GpUpdate + Mises à jour",
+            WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+            x, y, w, h,
+            hwnd, (HMENU)BTN_GPUPDATE, nullptr, nullptr);
+
+        y += h + gap;
+        CreateWindowW(L"BUTTON", L"Activer Verr Num",
+            WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+            x, y, w, h,
+            hwnd, (HMENU)BTN_NUMLOCK, nullptr, nullptr);
+
+        y += h + gap;
+        CreateWindowW(L"BUTTON", L"Raccourci portail imprimante",
+            WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+            x, y, w, h,
+            hwnd, (HMENU)BTN_PRINTER, nullptr, nullptr);
+
+        y += h + gap;
+        CreateWindowW(L"BUTTON", L"Ouvrir Regedit",
+            WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+            x, y, w, h,
+            hwnd, (HMENU)BTN_REGEDIT, nullptr, nullptr);
+
+        y += h + gap;
+        CreateWindowW(L"BUTTON", L"Ouvrir Gestionnaire périphériques",
+            WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+            x, y, w, h,
+            hwnd, (HMENU)BTN_DEVMGMT, nullptr, nullptr);
+
+        y += h + gap;
+        CreateWindowW(L"BUTTON", L"Ouvrir Gestionnaire des tâches",
+            WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+            x, y, w, h,
+            hwnd, (HMENU)BTN_TASKMGR, nullptr, nullptr);
+
+        y += h + gap;
+        CreateWindowW(L"BUTTON", L"Réparer applis Intune en échec",
+            WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+            x, y, w, h,
+            hwnd, (HMENU)BTN_INTUNE_FIX, nullptr, nullptr);
     }
     break;
+
+
 
     case WM_COMMAND:
     {
@@ -175,19 +260,53 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         case BTN_HPIA:
             RunHPIA();
             break;
+
+        case BTN_LANG_FR:
+            // SetLanguageFR();
+            break;
+
+        case BTN_GPUPDATE:
+            // RunGPUpdate();
+            break;
+
+        case BTN_NUMLOCK:
+            // EnableNumLock();
+            break;
+
+        case BTN_PRINTER:
+            // CreatePrinterShortcut();
+            break;
+
+        case BTN_REGEDIT:
+            // OpenRegedit();
+            break;
+
+        case BTN_DEVMGMT:
+            // OpenDeviceManager();
+            break;
+
+        case BTN_TASKMGR:
+            // OpenTaskManager();
+            break;
+
+        case BTN_INTUNE_FIX:
+           // RunIntuneFix();
+            break;
         }
     }
     break;
+
 
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
 
     default:
-        return DefWindowProc(hwnd, message, wParam, lParam);
+        return DefWindowProcW(hwnd, message, wParam, lParam);
     }
     return 0;
 }
+
 
 // Message handler for about box.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)

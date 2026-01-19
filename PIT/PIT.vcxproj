@@ -141,17 +141,21 @@
   <ItemGroup>
     <ClInclude Include="AdminUtils.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="GetHostname.h" />
     <ClInclude Include="HPIA.h" />
     <ClInclude Include="PowerShellUtils.h" />
     <ClInclude Include="PIT.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="UserInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AdminUtils.cpp" />
+    <ClCompile Include="GetHostname.cpp" />
     <ClCompile Include="HPIA.cpp" />
     <ClCompile Include="PIT.cpp" />
     <ClCompile Include="PowerShellUtils.cpp" />
+    <ClCompile Include="UserInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PIT.rc" />

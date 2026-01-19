@@ -36,6 +36,12 @@
     <ClInclude Include="AdminUtils.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="GetHostname.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInfo.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PIT.cpp">
@@ -48,6 +54,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AdminUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GetHostname.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
