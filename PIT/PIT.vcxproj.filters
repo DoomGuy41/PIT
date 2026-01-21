@@ -45,6 +45,15 @@
     <ClInclude Include="IntuneFix.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="LogWindow.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ToastNotification.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VersionUtils.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PIT.cpp">
@@ -68,6 +77,15 @@
     <ClCompile Include="IntuneFix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LogWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToastNotification.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VersionUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PIT.rc">
@@ -81,5 +99,10 @@
     <Image Include="PIT.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="IntuneFix.ps1">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

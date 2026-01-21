@@ -7,6 +7,13 @@
 #include "GetHostname.h"
 #include "UserInfo.h"
 #include <shellapi.h>
+#include "IntuneFix.h"
+#include "LogWindow.h"
+#include <shobjidl.h>
+#include "ToastNotification.h"
+#include "VersionUtils.h"
+
+
 
 #define MAX_LOADSTRING 100
 
@@ -50,6 +57,10 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
         RelaunchElevatedIfNeeded();
         return 0;
     }
+
+    SetCurrentProcessExplicitAppUserModelID(
+        L"PIT.PostInstall.Toolbox"
+    );
 
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_PIT, szWindowClass, MAX_LOADSTRING);
@@ -178,6 +189,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         );
         SendMessageW(hLblUser, WM_SETFONT, (WPARAM)g_hFontMain, TRUE);
 
+
+        std::wstring version = L"Version " + GetAppVersion();
+
+        HWND hLblVersion = CreateWindowW(
+            L"STATIC",
+            version.c_str(),
+            WS_CHILD | WS_VISIBLE | SS_RIGHT,
+            5, 460, 100, 50, 
+            hwnd,
+            nullptr,
+            nullptr,
+            nullptr
+        );
+
+
         // === Boutons ===
         int x = 20;
         int y = 70;
@@ -289,7 +315,17 @@ case WM_MOUSEMOVE:
         case BTN_REGEDIT:      ShellExecuteW(nullptr, L"open", L"regedit.exe", nullptr, nullptr, SW_SHOWNORMAL); break;
         case BTN_DEVMGMT:      ShellExecuteW(nullptr, L"open", L"devmgmt.msc", nullptr, nullptr, SW_SHOWNORMAL); break;
         case BTN_TASKMGR:      ShellExecuteW(nullptr, L"open", L"taskmgr.exe", nullptr, nullptr, SW_SHOWNORMAL); break;
-        case BTN_INTUNE_FIX:   break;
+        case BTN_INTUNE_FIX:
+            RunIntuneFix();
+          ShowLogWindow(hwnd);
+            ShowToast(
+                hwnd,
+                L"PIT – Intune",
+                L"Le correctif Intune a été lancé en arrière-plan."
+            );
+
+
+            break;
         }
         break;
 
@@ -377,10 +413,17 @@ case WM_MOUSEMOVE:
     }
     break;
 
+
+    case WM_TIMER:
+        UpdateLogWindow();
+        break;
+    
+
     // ------------------------------------------------------------
     case WM_DESTROY:
         if (g_hFontMain) DeleteObject(g_hFontMain);
         if (g_hBrushButton) DeleteObject(g_hBrushButton);
+        CleanupTray();
         PostQuitMessage(0);
         break;
     }
