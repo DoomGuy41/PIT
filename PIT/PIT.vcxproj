@@ -143,6 +143,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="GetHostname.h" />
     <ClInclude Include="HPIA.h" />
+    <ClInclude Include="IntuneFix.h" />
     <ClInclude Include="PowerShellUtils.h" />
     <ClInclude Include="PIT.h" />
     <ClInclude Include="Resource.h" />
@@ -153,6 +154,7 @@
     <ClCompile Include="AdminUtils.cpp" />
     <ClCompile Include="GetHostname.cpp" />
     <ClCompile Include="HPIA.cpp" />
+    <ClCompile Include="IntuneFix.cpp" />
     <ClCompile Include="PIT.cpp" />
     <ClCompile Include="PowerShellUtils.cpp" />
     <ClCompile Include="UserInfo.cpp" />
