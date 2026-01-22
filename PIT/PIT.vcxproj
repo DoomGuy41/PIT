@@ -130,6 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -145,6 +146,7 @@
     <ClInclude Include="HPIA.h" />
     <ClInclude Include="IntuneFix.h" />
     <ClInclude Include="LogWindow.h" />
+    <ClInclude Include="PortailInstallerNative.h" />
     <ClInclude Include="PowerShellUtils.h" />
     <ClInclude Include="PIT.h" />
     <ClInclude Include="Resource.h" />
@@ -160,6 +162,7 @@
     <ClCompile Include="IntuneFix.cpp" />
     <ClCompile Include="LogWindow.cpp" />
     <ClCompile Include="PIT.cpp" />
+    <ClCompile Include="PortailInstallerNative.cpp" />
     <ClCompile Include="PowerShellUtils.cpp" />
     <ClCompile Include="ToastNotification.cpp" />
     <ClCompile Include="UserInfo.cpp" />

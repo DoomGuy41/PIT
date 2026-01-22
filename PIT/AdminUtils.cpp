@@ -1,5 +1,4 @@
-﻿
-#include "AdminUtils.h"
+﻿#include "AdminUtils.h"
 #include <windows.h>
 #include <shellapi.h>
 
@@ -47,8 +46,10 @@ bool RelaunchElevatedIfNeeded()
         SW_SHOWNORMAL
     );
 
+    // ShellExecute returns a value > 32 on success.
     if ((INT_PTR)res <= 32)
         return false;
 
-    return false; // on quitte l’instance actuelle
+    // Indicate we successfully launched an elevated instance.
+    return true;
 }
