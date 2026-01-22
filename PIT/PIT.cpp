@@ -373,7 +373,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             L"STATIC",
             version.c_str(),
             WS_CHILD | WS_VISIBLE | SS_RIGHT,
-            S(-95), S(505), S(200), S(50),
+            S(-95), S(535), S(200), S(50),
             hwnd,
             nullptr,
             nullptr,
@@ -630,9 +630,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         MINMAXINFO* mmi = (MINMAXINFO*)lParam;
         // scale fixed window dimensions according to DPI set at WM_CREATE / InitInstance
         mmi->ptMinTrackSize.x = MulDiv(375, g_dpi, 96);
-        mmi->ptMinTrackSize.y = MulDiv(565, g_dpi, 96);
+        mmi->ptMinTrackSize.y = MulDiv(595, g_dpi, 96);
         mmi->ptMaxTrackSize.x = MulDiv(375, g_dpi, 96);
-        mmi->ptMaxTrackSize.y = MulDiv(565, g_dpi, 96);
+        mmi->ptMaxTrackSize.y = MulDiv(595, g_dpi, 96);
         return 0;
     }
 
