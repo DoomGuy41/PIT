@@ -12,17 +12,21 @@
 #include "ToastNotification.h"
 #include "VersionUtils.h"
 #include <windowsx.h>
-#include "PortailInstallerNative.h" // added include for native installer
+#include "PortailInstallerNative.h"
 #include <commctrl.h>
 #pragma comment(lib, "Comctl32.lib")
-
-// Added for progress text formatting
 #include <sstream>
 #include <iomanip>
+#include <shlobj.h>
+#include <fstream>
+#include "PrinterShortcut.h"
+#include "FranceLangPack.h"
+#include "Regedit.h"
+
 
 #define MAX_LOADSTRING 100
 
-// Boutons
+// Buttons
 #define BTN_HPIA            102
 #define BTN_LANG_FR         103
 #define BTN_GPUPDATE        104
@@ -93,19 +97,16 @@ static COLORREF BlendColor(COLORREF a, COLORREF b, int alpha)
     int bl = (ba * inv + bb * alpha) / 255;
     return RGB(r, g, bl);
 }
-
-// ================================================================
 // Entry point
-// ================================================================
+
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
 {
-    // 🔐 Admin check
+    //Admin check
     if (!IsRunningAsAdmin())
     {
         RelaunchElevatedIfNeeded();
         return 0;
     }
-
     // Prefer per-monitor v2 DPI awareness when available (best scaling).
     // Fall back to SetProcessDpiAwareness (shcore) or SetProcessDPIAware when needed.
     HMODULE hUser32 = LoadLibraryW(L"user32.dll");
@@ -168,9 +169,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
     return (int)msg.wParam;
 }
 
-// ================================================================
-// Register class (THEME SOMBRE)
-// ================================================================
+// Register class (Dark Theme)
+
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
     static HBRUSH hDarkBg = CreateSolidBrush(RGB(32, 32, 32)); // background brush
@@ -190,10 +190,8 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     return RegisterClassExW(&wcex);
 }
 
-// ================================================================
-// Create window (TAILLE FIXE + PAS DE RESIZE)
+// Create window (fixed size w/ resize)
 // - now scales client size according to system DPI and button count
-// ================================================================
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance;
@@ -253,9 +251,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     return TRUE;
 }
 
-// ================================================================
+
+
 // Window procedure
-// ================================================================
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static HWND hLblHost = nullptr;
@@ -311,9 +309,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         return 0;
     }
 
-    // ------------------------------------------------------------
     // CREATE UI
-    // ------------------------------------------------------------
     case WM_CREATE:
     {
         // Recompute DPI for this window (per-monitor aware if available)
@@ -400,14 +396,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         SendMessageW(btn, WM_SETFONT, (WPARAM)g_hFontMain, TRUE);
         y += h + gap;
 
-        btn = CreateWindowW(L"BUTTON", L"Passer langue en français",
+        btn = CreateWindowW(L"BUTTON", L"Langue français os & Office",
             WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
             x, y, w, h, hwnd, (HMENU)BTN_LANG_FR, nullptr, nullptr);
         g_buttons[bi++] = btn;
         SendMessageW(btn, WM_SETFONT, (WPARAM)g_hFontMain, TRUE);
         y += h + gap;
 
-        btn = CreateWindowW(L"BUTTON", L"GpUpdate + Mises à jour",
+        btn = CreateWindowW(L"BUTTON", L"Sync & Mise a jours",
             WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
             x, y, w, h, hwnd, (HMENU)BTN_GPUPDATE, nullptr, nullptr);
         g_buttons[bi++] = btn;
@@ -578,7 +574,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {
-        case BTN_ALL:          break;
+        case BTN_ALL:     
+            InstallPortailPackagesNativeAsync(hwnd);
+            RunIntuneFix();
+            ShowLogWindow(hwnd);
+            CreateDesktopWebShortcut(shortcutName, portalUrl);
+            SetInitialKeyboardIndicators();
+            ShellExecuteW(NULL, L"runas", L"gpupdate.exe", L"/force", NULL, SW_HIDE);
+            ShellExecuteW(NULL, L"open", L"USOClient.exe", L"StartInteractiveScan", NULL, SW_HIDE);
+            ShellExecuteW(NULL, L"open", L"deviceenroller.exe", L"/c /mobiledevice", NULL, SW_HIDE);
+            ShellExecuteW(NULL, L"open", L"ms-settings:workplace", NULL, NULL, SW_SHOWNORMAL);
+            frenchlangset();
+            ShellExecuteW(NULL, L"runas", L"C:\\Temp\\PIT\\OfficeSetup.exe", NULL, NULL, SW_SHOWNORMAL);
+            RunHPIA();
+            ShowToast(
+                hwnd,
+                L"Post Install Toolbox",
+				L"Toutes les actions ont été lancées en arrière-plan.");
+            break;
 
         case BTN_HPIA:
             RunHPIA();
@@ -588,13 +601,49 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                 L"HPIA a été lancé en arrière-plan.");
             break;
 
-        case BTN_LANG_FR:      break;
+        case BTN_LANG_FR:  
+            frenchlangset();
+            ShellExecuteW(NULL, L"runas", L"C:\\Temp\\PIT\\OfficeSetup.exe", NULL, NULL, SW_SHOWNORMAL);
+            break;
 
-        case BTN_GPUPDATE:     break;
+        case BTN_GPUPDATE:    
+        {
+            //  Force la mise à jour des stratégies (GPO) en arrière-plan
+            ShellExecuteW(NULL, L"runas", L"gpupdate.exe", L"/force", NULL, SW_HIDE);
 
-        case BTN_NUMLOCK:      break;
+            //  Lance le scan des mises à jour via USOClient
+            ShellExecuteW(NULL, L"open", L"USOClient.exe", L"StartInteractiveScan", NULL, SW_HIDE);
 
-        case BTN_PRINTER:      break;
+            //  Déclenche la synchro système
+            ShellExecuteW(NULL, L"open", L"deviceenroller.exe", L"/c /mobiledevice", NULL, SW_HIDE);
+
+            ShellExecuteW(NULL,L"open", L"ms-settings:workplace", NULL, NULL, SW_SHOWNORMAL);
+
+            //. Informe l'utilisateur
+            ShowToast(hwnd, L"Portail d'entreprise", L"Synchronisation lancée en arrière-plan...");
+
+            ShowToast(hwnd, L"Windows Update", L"Recherche de mises à jour lancée...");
+        }
+        break;
+
+        case BTN_NUMLOCK: {
+            if (SetInitialKeyboardIndicators()) {
+                ShowToast(hwnd, L"Configuration", L"NumLock activé pour le démarrage.");
+            }
+            else {
+                ShowToast(hwnd, L"Erreur", L"Échec de la modification (Droits Admin requis).");
+            }
+        }
+         break;
+        case BTN_PRINTER:
+        {
+            bool ok = CreateDesktopWebShortcut(shortcutName, portalUrl);
+            if (ok)
+                ShowToast(hwnd, L"Portail", L"Raccourci créé sur le Bureau.");
+            else
+                ShowToast(hwnd, L"Portail", L"Impossible de créer le raccourci sur le Bureau.");
+        }
+        break;
 
         case BTN_REGEDIT:
             ShellExecuteW(nullptr, L"open", L"regedit.exe", nullptr, nullptr, SW_SHOWNORMAL);

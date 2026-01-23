@@ -82,12 +82,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
+  <!-- ItemDefinitionGroups updated to use static CRT (/MT) and C++17 for all configurations -->
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <!-- Static debug CRT -->
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -102,6 +106,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <!-- Static CRT -->
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -116,6 +123,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <!-- Static debug CRT -->
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -131,6 +141,8 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <!-- Static CRT -->
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,6 +154,7 @@
   <ItemGroup>
     <ClInclude Include="AdminUtils.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="FranceLangPack.h" />
     <ClInclude Include="GetHostname.h" />
     <ClInclude Include="HPIA.h" />
     <ClInclude Include="IntuneFix.h" />
@@ -149,6 +162,8 @@
     <ClInclude Include="PortailInstallerNative.h" />
     <ClInclude Include="PowerShellUtils.h" />
     <ClInclude Include="PIT.h" />
+    <ClInclude Include="PrinterShortcut.h" />
+    <ClInclude Include="Regedit.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="UserInfo.h" />
@@ -157,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AdminUtils.cpp" />
+    <ClCompile Include="FranceLangPack.cpp" />
     <ClCompile Include="GetHostname.cpp" />
     <ClCompile Include="HPIA.cpp" />
     <ClCompile Include="IntuneFix.cpp" />
@@ -164,6 +180,8 @@
     <ClCompile Include="PIT.cpp" />
     <ClCompile Include="PortailInstallerNative.cpp" />
     <ClCompile Include="PowerShellUtils.cpp" />
+    <ClCompile Include="PrinterShortcut.cpp" />
+    <ClCompile Include="Regedit.cpp" />
     <ClCompile Include="ToastNotification.cpp" />
     <ClCompile Include="UserInfo.cpp" />
     <ClCompile Include="VersionUtils.cpp" />
