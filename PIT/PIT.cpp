@@ -369,7 +369,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             L"STATIC",
             version.c_str(),
             WS_CHILD | WS_VISIBLE | SS_RIGHT,
-            S(-95), S(535), S(200), S(50),
+            S(-115), S(535), S(200), S(50),
             hwnd,
             nullptr,
             nullptr,
@@ -396,14 +396,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         SendMessageW(btn, WM_SETFONT, (WPARAM)g_hFontMain, TRUE);
         y += h + gap;
 
-        btn = CreateWindowW(L"BUTTON", L"Langue français os & Office",
+        btn = CreateWindowW(L"BUTTON", L"Langue français os / Office",
             WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
             x, y, w, h, hwnd, (HMENU)BTN_LANG_FR, nullptr, nullptr);
         g_buttons[bi++] = btn;
         SendMessageW(btn, WM_SETFONT, (WPARAM)g_hFontMain, TRUE);
         y += h + gap;
 
-        btn = CreateWindowW(L"BUTTON", L"Sync & Mise a jours",
+        btn = CreateWindowW(L"BUTTON", L"Sync / Mise a jours",
             WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
             x, y, w, h, hwnd, (HMENU)BTN_GPUPDATE, nullptr, nullptr);
         g_buttons[bi++] = btn;

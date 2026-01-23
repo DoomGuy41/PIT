@@ -34,14 +34,12 @@ std::wstring GetAppVersion()
 
     WORD major = HIWORD(info->dwFileVersionMS);
     WORD minor = LOWORD(info->dwFileVersionMS);
-    WORD build = HIWORD(info->dwFileVersionLS);
-    WORD revision = LOWORD(info->dwFileVersionLS);
 
     wchar_t version[64];
     swprintf_s(
         version,
-        L"%d.%d.%d.%d",
-        major, minor, build, revision);
+        L"%d.%d",
+        major, minor);
 
     return version;
 }

@@ -18,8 +18,8 @@
 #define IDC_STATIC				-1
 
 
-#define VER_FILEVERSION             1,0
-#define VER_FILEVERSION_STR         "1.0"
+#define VER_FILEVERSION             1,1
+#define VER_FILEVERSION_STR         "1.1"
 
 
 #endif
