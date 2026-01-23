@@ -1,4 +1,5 @@
-﻿#include "framework.h"
+﻿#pragma comment(lib, "Comctl32.lib")
+#include "framework.h"
 #include "PIT.h"
 #include "HPIA.h"
 #include "PowerShellUtils.h"
@@ -14,7 +15,6 @@
 #include <windowsx.h>
 #include "PortailInstallerNative.h"
 #include <commctrl.h>
-#pragma comment(lib, "Comctl32.lib")
 #include <sstream>
 #include <iomanip>
 #include <shlobj.h>
@@ -149,7 +149,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int nCmdShow)
     }
 
     SetCurrentProcessExplicitAppUserModelID(
-        L"PIT.PostInstall.Toolbox"
+        L"Post Install Toolbox"
     );
 
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -597,8 +597,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             RunHPIA();
             ShowToast(
                 hwnd,
-                L"Post Install Toolbox  – HPIA",
-                L"HPIA a été lancé en arrière-plan.");
+                L"HP Image Assistant",
+                L"Lancé en arrière-plan.");
             break;
 
         case BTN_LANG_FR:  
@@ -628,7 +628,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         case BTN_NUMLOCK: {
             if (SetInitialKeyboardIndicators()) {
-                ShowToast(hwnd, L"Configuration", L"NumLock activé pour le démarrage.");
+                ShowToast(hwnd, L"Regedit", L"NumLock activé pour le démarrage.");
             }
             else {
                 ShowToast(hwnd, L"Erreur", L"Échec de la modification (Droits Admin requis).");
@@ -639,9 +639,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             bool ok = CreateDesktopWebShortcut(shortcutName, portalUrl);
             if (ok)
-                ShowToast(hwnd, L"Portail", L"Raccourci créé sur le Bureau.");
+                ShowToast(hwnd, L"Portail Printer", L"Raccourci créé sur le Bureau.");
             else
-                ShowToast(hwnd, L"Portail", L"Impossible de créer le raccourci sur le Bureau.");
+                ShowToast(hwnd, L"Portail Printer", L"Impossible de créer le raccourci sur le Bureau.");
         }
         break;
 
@@ -662,8 +662,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             ShowLogWindow(hwnd);
             ShowToast(
                 hwnd,
-                L"Post Install Toolbox – Intune",
-                L"Le correctif Intune a été lancé en arrière-plan.");
+                L"Intune",
+                L"Le correctif a été lancé en arrière-plan.");
             break;
 
         case BTN_INSTALL_PORTAIL:
